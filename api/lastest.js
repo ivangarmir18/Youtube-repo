@@ -8,16 +8,24 @@ export default async function handler(req, res) {
 
     const text = await response.text();
 
+    // Sacamos todos los enlaces de vídeos
     const matches = [...text.matchAll(/<link rel="alternate" href="([^"]+)"/g)];
     const links = matches.map(m => m[1]);
+
+    // Filtramos solo vídeos largos, no shorts
     const longVideos = links.filter(l => l.includes("watch?v=") && !l.includes("/shorts/"));
 
     if (longVideos.length === 0) return res.status(404).send("No se encontró vídeo largo");
 
-    res.writeHead(302, { Location: longVideos[0] });
-    res.end();
+    // Convertimos a youtu.be
+    const videoUrl = longVideos[0];
+    const shortUrl = videoUrl.replace("https://www.youtube.com/watch?v=", "https://youtu.be/");
+
+    // Enviamos mensaje de texto plano
+    res.status(200).send(`Último vídeo aquí: ${shortUrl}`);
   } catch (err) {
     console.error(err);
     res.status(500).send("Internal Server Error");
   }
 }
+
