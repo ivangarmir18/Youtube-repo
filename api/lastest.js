@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   try {
-    const channelId = "UCcR3aqM7Qugzc_pdr_rUnrQ";
+    const channelId = "UCQ-jmzE0enmyz1ajeXte2lw";
     const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
 
     const response = await fetch(rssUrl);
