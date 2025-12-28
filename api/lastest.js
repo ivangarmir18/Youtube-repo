@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   const response = await fetch(rssUrl);
   const text = await response.text();
 
-  // Buscar todos los <link> y descartar shorts
+  // Buscar todos los links y descartar shorts
   const links = [...text.matchAll(/<link rel="alternate" href="([^"]+)"/g)]
                     .map(m => m[1])
                     .filter(link => !link.includes("/shorts/"));
