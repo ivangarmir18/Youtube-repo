@@ -1,35 +1,23 @@
-// api/latest.js
 export default async function handler(req, res) {
   try {
-    const channelId = "UCQ-jmzE0enmyz1ajeXte2lw"; // tu channel_id
+    const channelId = "UCQ-jmzE0enmyz1ajeXte2lw";
     const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
 
-    // fetch nativo de Vercel
-    const response = await fetch(rssUrl, { method: "GET" });
-    if (!response.ok) {
-      return res.status(502).send("Error al obtener el feed de YouTube");
-    }
+    const response = await fetch(rssUrl);
+    if (!response.ok) return res.status(502).send("Error al obtener el feed");
+
     const text = await response.text();
 
-    // Extrae todos los links alternativos de vídeo
-    const matches = [...text.matchAll(/<link\s+rel="alternate"\s+href="([^"]+)"/g)];
+    const matches = [...text.matchAll(/<link rel="alternate" href="([^"]+)"/g)];
     const links = matches.map(m => m[1]);
+    const longVideos = links.filter(l => l.includes("watch?v=") && !l.includes("/shorts/"));
 
-    // Filtrar sólo URLs tipo watch (evitar /shorts/) y quitar duplicados
-    const longVideos = links
-      .filter(l => l.includes("watch?v=") && !l.includes("/shorts/"))
-      .filter((v, i, arr) => arr.indexOf(v) === i);
+    if (longVideos.length === 0) return res.status(404).send("No se encontró vídeo largo");
 
-    if (longVideos.length === 0) {
-      return res.status(404).send("No se encontró un vídeo largo");
-    }
-
-    // redirige (el primer elemento es el más reciente)
-    const latest = longVideos[0];
-    res.writeHead(302, { Location: latest });
+    res.writeHead(302, { Location: longVideos[0] });
     res.end();
   } catch (err) {
-    console.error("ERROR function /api/latest:", err);
+    console.error(err);
     res.status(500).send("Internal Server Error");
   }
 }
