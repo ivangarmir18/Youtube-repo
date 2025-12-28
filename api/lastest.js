@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
 
-    return res.status(200).send(`Último vídeo aquí: ${shortUrl}`);
+    return res.status(200).send(`${shortUrl}`);
   } catch (err) {
     console.error("ERROR /api/lastest:", err);
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
